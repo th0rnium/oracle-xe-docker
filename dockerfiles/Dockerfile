@@ -64,11 +64,11 @@ RUN echo "oracle ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
 #  which is not required when using Docker
 #  on the last part we clean up the install folder and any temporary files
 #
-COPY software/oracle-database-preinstall-18c-1.0-1.el7.x86_64.rpm /install
-COPY software/oracle-database-xe-18c-1.0-1.x86_64.rpm /install/
+COPY software/oracle-database-preinstall-21c-1.0-1.el8.x86_64.rpm /install
+COPY software/oracle-database-xe-21c-1.0-1.ol8.x86_64.rpm /install/
 ENV ORACLE_DOCKER_INSTALL=true
 RUN cd /install \
- && yum -y localinstall oracle-database-*18c*  \
+ && yum -y localinstall oracle-database-*21c*  \
  && yum clean all \
  && rm -rf /var/cache/yum/* \
 && rm -rf /install/oracle*.rpm
@@ -93,8 +93,8 @@ EXPOSE 1521 5500
 #     no user interaction is required.  
 #     
 #
-RUN sed -i -e "s/^.*memlock.*//g" /etc/security/limits.d/oracle-database-preinstall-18c.conf \
- && printf oracle\\noracle\\n  | /etc/init.d/oracle-xe-18c configure
+RUN sed -i -e "s/^.*memlock.*//g" /etc/security/limits.d/oracle-database-preinstall-21c.conf \
+ && printf oracle\\noracle\\n  | /etc/init.d/oracle-xe-21c configure
 
 ## 
 #  We now add an entrypoint script.  There is a lot of information on Entrypoint 
@@ -123,8 +123,8 @@ WORKDIR /home/oracle
 #
 ENV ORACLE_DOCKER_INSTALL=true \
     ORACLE_BASE=/opt/oracle \
-    ORACLE_HOME=/opt/oracle/product/18c/dbhomeXE \
-    PATH=/home/oracle/bin:/opt/oracle/product/18c/dbhomeXE/bin:$PATH \
+    ORACLE_HOME=/opt/oracle/product/21c/dbhomeXE \
+    PATH=/home/oracle/bin:/opt/oracle/product/21c/dbhomeXE/bin:$PATH \
     NLS_DATE_FORMAT="dd/mm/yyyy:hh24:mi:ss" \
     ORACLE_SID=XE
 
