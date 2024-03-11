@@ -8,7 +8,7 @@ FROM oraclelinux:9
 #  Then we provide some basic information - you can customise this to your need, but 
 #  I just add my email here 
 #
-MAINTAINER anton.els@dbvisit.com
+#MAINTAINER anton.els@dbvisit.com
 
 ##
 #  We are now switching to the root user as the next steps will require root permission
@@ -23,7 +23,7 @@ RUN groupadd -g 501 oinstall \
   && groupadd -g 502 dba \
   && groupadd -g 503 oper \
   && useradd -m -g oinstall -G oinstall,dba,oper -u 501 oracle \
-  && echo 'oracle:Kiwi123' | chpasswd
+  && echo 'oracle:oracle' | chpasswd
 
 ## 
 #  now as Pre-requisite for the Oracle 18c XE Install
@@ -94,7 +94,7 @@ EXPOSE 1521 5500
 #     
 #
 RUN sed -i -e "s/^.*memlock.*//g" /etc/security/limits.d/oracle-database-preinstall-18c.conf \
- && printf Kiwi123\\nKiwi123\\n  | /etc/init.d/oracle-xe-18c configure
+ && printf oracle\\noracle\\n  | /etc/init.d/oracle-xe-18c configure
 
 ## 
 #  We now add an entrypoint script.  There is a lot of information on Entrypoint 
