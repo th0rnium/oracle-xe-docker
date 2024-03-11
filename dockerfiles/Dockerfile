@@ -33,10 +33,16 @@ RUN groupadd -g 501 oinstall \
 #  We also want to keep the image small, so to do this we cleanup after the install and remove
 #  all temporary files and install caches using during installation
 #
- RUN rpm --rebuilddb \
- && yum -y install file openssl lsof sudo sysstat tree wget which  \
- && yum clean all \
- && rm -rf /var/cache/yum/*
+
+#RUN rpm --rebuilddb \
+#  && yum -y install file openssl lsof sudo sysstat tree wget which  \
+#  && yum clean all \
+#  && rm -rf /var/cache/yum/*
+#RUN /var/lib/rpm
+#RUN rpm --rebuilddb
+RUN yum -y install file openssl lsof sudo sysstat tree wget which
+RUN yum clean all 
+RUN rm -rf /var/cache/yum/*
 
 ## 
 #  Update sudoers to allow the Oracle Unix user to run commands as the root user.  
