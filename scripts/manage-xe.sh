@@ -126,13 +126,13 @@ setup_parameters
 
 case ${v_option} in
 "start")
-          sudo /etc/init.d/oracle-xe-18c start
+          sudo /etc/init.d/oracle-xe-21c start
           enableDBExpress
           tail -F -n 0 /opt/oracle/diag/rdbms/xe/XE/trace/alert_XE.log
           ;;
 "stop")
 
-          sudo /etc/init.d/oracle-xe-18c stop
+          sudo /etc/init.d/oracle-xe-21c stop
           tail -50 /opt/oracle/diag/rdbms/xe/XE/trace/alert_XE.log
           ;;
 esac 
