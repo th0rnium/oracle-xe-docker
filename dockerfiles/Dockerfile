@@ -2,7 +2,7 @@
 #  First we select our base image that we will use to build from.
 #  in this case we will use Oracle Linux 7.6 
 #
-FROM oraclelinux:7.6
+FROM oraclelinux:9
 
 ##
 #  Then we provide some basic information - you can customise this to your need, but 
