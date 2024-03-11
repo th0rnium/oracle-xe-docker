@@ -1,2 +1,2 @@
 #!/bin/bash
-docker build -f dockerfiles/Dockerfile -t oracle-db:18cXE .
+docker build -f dockerfiles/Dockerfile -t oracle-db:21cXE .
