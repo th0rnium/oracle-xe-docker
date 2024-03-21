@@ -1,7 +1,7 @@
+#!/bin/bash -e
 # Original file from: https://dbvisit.com/blog/oracle-database-18c-express-edition-getting-started-part-3
 
 
-#!/bin/bash -e
 # Basic script to manage XE database options
 # set -x
 
