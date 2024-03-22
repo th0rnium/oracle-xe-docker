@@ -77,6 +77,11 @@ RUN ls
 RUN yum -y localinstall compat-openssl10-1.0.2o-4.el8.x86_64.rpm
 RUN yum -y localinstall oracle-database-preinstall-21c-1.0-1.el8.x86_64.rpm
 RUN yum -y localinstall oracle-database-xe-21c-1.0-1.ol8.x86_64.rpm
+# Download rlwrap
+RUN dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+RUN dnf -y install rlwrap
+RUN alias rlsqlplus="rlwrap sqlplus"
+RUN alias rlrman="rlwrap rman"
 
 
 RUN yum clean all
