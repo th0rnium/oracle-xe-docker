@@ -1,7 +1,4 @@
 #!/bin/bash -e
-# Original file from: https://dbvisit.com/blog/oracle-database-18c-express-edition-getting-started-part-3
-
-
 # Basic script to manage XE database options
 # set -x
 
@@ -129,13 +126,13 @@ setup_parameters
 
 case ${v_option} in
 "start")
-          sudo /etc/init.d/oracle-xe-21c start
+          sudo /etc/init.d/oracle-xe-18c start
           enableDBExpress
           tail -F -n 0 /opt/oracle/diag/rdbms/xe/XE/trace/alert_XE.log
           ;;
 "stop")
 
-          sudo /etc/init.d/oracle-xe-21c stop
+          sudo /etc/init.d/oracle-xe-18c stop
           tail -50 /opt/oracle/diag/rdbms/xe/XE/trace/alert_XE.log
           ;;
 esac 

@@ -1,12 +1,14 @@
-# Original file from: https://dbvisit.com/blog/oracle-database-18c-express-edition-getting-started-part-3
-
 ##
 #  First we select our base image that we will use to build from.
-#  in this case we will use Oracle Linux 8
+#  in this case we will use Oracle Linux 7.6 
 #
-FROM oraclelinux:8
+FROM oraclelinux:7.6
 
-
+##
+#  Then we provide some basic information - you can customise this to your need, but 
+#  I just add my email here 
+#
+MAINTAINER anton.els@dbvisit.com
 
 ##
 #  We are now switching to the root user as the next steps will require root permission
@@ -21,13 +23,20 @@ RUN groupadd -g 501 oinstall \
   && groupadd -g 502 dba \
   && groupadd -g 503 oper \
   && useradd -m -g oinstall -G oinstall,dba,oper -u 501 oracle \
-  && echo 'oracle:oracle' | chpasswd
+  && echo 'oracle:Kiwi123' | chpasswd
 
-# rpm --rebuilddb dont work. 
-#RUN rpm --rebuilddb 
-RUN yum -y install file openssl lsof sudo sysstat tree wget which
-RUN yum clean all 
-RUN rm -rf /var/cache/yum/*
+## 
+#  now as Pre-requisite for the Oracle 18c XE Install
+#  a few extra packages are required - and as I use tools like tree, which and sysstat
+#  we add them here as well.  You can customise this, but “file” and “openssl” must be installed
+#  before you can install Oracle 18c XE.
+#  We also want to keep the image small, so to do this we cleanup after the install and remove
+#  all temporary files and install caches using during installation
+#
+ RUN rpm --rebuilddb \
+ && yum -y install file openssl lsof sudo sysstat tree wget which  \
+ && yum clean all \
+ && rm -rf /var/cache/yum/*
 
 ## 
 #  Update sudoers to allow the Oracle Unix user to run commands as the root user.  
@@ -55,39 +64,14 @@ RUN echo "oracle ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
 #  which is not required when using Docker
 #  on the last part we clean up the install folder and any temporary files
 #
-COPY software/oracle-database-preinstall-21c-1.0-1.el8.x86_64.rpm /install
-COPY software/oracle-database-xe-21c-1.0-1.ol8.x86_64.rpm /install/
-copy software/compat-openssl10-1.0.2o-4.el8.x86_64.rpm /install/
-
+COPY software/oracle-database-preinstall-18c-1.0-1.el7.x86_64.rpm /install
+COPY software/oracle-database-xe-18c-1.0-1.x86_64.rpm /install/
 ENV ORACLE_DOCKER_INSTALL=true
-# yum -y localinstall oracle-database-*18c*
-#RUN cd /install \
-# && yum -y localinstall oracle-database-*21c*  \
-# && yum clean all \
-# && rm -rf /var/cache/yum/* \
-#&& rm -rf /install/oracle*.rpm
-#RUN cd /install
-WORKDIR /install
-ARG CACHEBUST=1 
-RUN ls
-
-#RUN yum -y localinstall oracle-database-*21c*
-#RUN yum search oracle-database-preinstall-18c
-#RUN yum install oracle-database-preinstall-18c
-RUN yum -y localinstall compat-openssl10-1.0.2o-4.el8.x86_64.rpm
-RUN yum -y localinstall oracle-database-preinstall-21c-1.0-1.el8.x86_64.rpm
-RUN yum -y localinstall oracle-database-xe-21c-1.0-1.ol8.x86_64.rpm
-# Download rlwrap
-RUN dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-RUN dnf -y install rlwrap
-RUN alias rlsqlplus="rlwrap sqlplus"
-RUN alias rlrman="rlwrap rman"
-
-
-RUN yum clean all
-RUN rm -rf /var/cache/yum/* 
-RUN rm -rf /install/oracle*.rpm
-
+RUN cd /install \
+ && yum -y localinstall oracle-database-*18c*  \
+ && yum clean all \
+ && rm -rf /var/cache/yum/* \
+&& rm -rf /install/oracle*.rpm
 
 ## 
 #  Next we specify which ports we want to expose for Oracle when a container 
@@ -109,8 +93,8 @@ EXPOSE 1521 5500
 #     no user interaction is required.  
 #     
 #
-RUN sed -i -e "s/^.*memlock.*//g" /etc/security/limits.d/oracle-database-preinstall-21c.conf \
- && printf oracle\\noracle\\n  | /etc/init.d/oracle-xe-21c configure
+RUN sed -i -e "s/^.*memlock.*//g" /etc/security/limits.d/oracle-database-preinstall-18c.conf \
+ && printf Kiwi123\\nKiwi123\\n  | /etc/init.d/oracle-xe-18c configure
 
 ## 
 #  We now add an entrypoint script.  There is a lot of information on Entrypoint 
@@ -139,8 +123,8 @@ WORKDIR /home/oracle
 #
 ENV ORACLE_DOCKER_INSTALL=true \
     ORACLE_BASE=/opt/oracle \
-    ORACLE_HOME=/opt/oracle/product/21c/dbhomeXE \
-    PATH=/home/oracle/bin:/opt/oracle/product/21c/dbhomeXE/bin:$PATH \
+    ORACLE_HOME=/opt/oracle/product/18c/dbhomeXE \
+    PATH=/home/oracle/bin:/opt/oracle/product/18c/dbhomeXE/bin:$PATH \
     NLS_DATE_FORMAT="dd/mm/yyyy:hh24:mi:ss" \
     ORACLE_SID=XE
 
