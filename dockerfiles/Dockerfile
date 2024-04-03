@@ -23,7 +23,7 @@ RUN groupadd -g 501 oinstall \
   && groupadd -g 502 dba \
   && groupadd -g 503 oper \
   && useradd -m -g oinstall -G oinstall,dba,oper -u 501 oracle \
-  && echo 'oracle:Kiwi123' | chpasswd
+  && echo 'oracle:oracle' | chpasswd
 
 ## 
 #  now as Pre-requisite for the Oracle 18c XE Install
@@ -93,8 +93,20 @@ EXPOSE 1521 5500
 #     no user interaction is required.  
 #     
 #
-RUN sed -i -e "s/^.*memlock.*//g" /etc/security/limits.d/oracle-database-preinstall-18c.conf \
- && printf Kiwi123\\nKiwi123\\n  | /etc/init.d/oracle-xe-18c configure
+RUN yum -y install expect
+COPY setup_oracle.sh /setup_oracle.sh
+RUN chmod +x /setup_oracle.sh
+RUN sed -i -e "s/^.*memlock.*//g" /etc/security/limits.d/oracle-database-preinstall-18c.conf
+# build until here
+# RUN (printf "oracle\noracle" && cat)  | /etc/init.d/oracle-xe-18c configure
+RUN /setup_oracle.sh
+ # \
+#(printf "oracle\noracle" && cat)  | /etc/init.d/oracle-xe-18c configure
+# (printf "oracle\\noracle\\n" )  | /etc/init.d/oracle-xe-18c configure
+# && printf oracle\\noracle\\n  | /etc/init.d/oracle-xe-18c configure
+#ARG CACHEBUST=1 
+#RUN ls /etc/init.d/oracle-xe-18c
+#/etc/init.d/oracle-xe-18c configure
 
 ## 
 #  We now add an entrypoint script.  There is a lot of information on Entrypoint 
@@ -103,43 +115,44 @@ RUN sed -i -e "s/^.*memlock.*//g" /etc/security/limits.d/oracle-database-preinst
 #  executable by the Oracle Unix account and this will be used to start the Oracle 18c XE
 #  database on launch of the container
 #
-COPY scripts/manage-xe.sh /home/oracle/bin
-RUN chown oracle:oinstall /home/oracle/bin/manage-xe.sh \
-  && chmod 775 /home/oracle/bin/manage-xe.sh
 
-##
-#  We now switch to the “oracle” user as up to this point all operations were performed as 
-#  the root user.  We also specify the work directory - which in this case is the default
-#  oracle user home folder location
-#
-USER oracle
-WORKDIR /home/oracle
+# COPY scripts/manage-xe.sh /home/oracle/bin
+# RUN chown oracle:oinstall /home/oracle/bin/manage-xe.sh \
+#   && chmod 775 /home/oracle/bin/manage-xe.sh
 
-## 
-#  Something really useful is to set current environment for the oracle user.
-#  This is done using the ENV command. With this we specify the core parameters that will 
-#  make things simpler for the “oracle” unix account, example setting the PATH, ORACLE_HOME
-#  ORACLE_SID etc.
-#
-ENV ORACLE_DOCKER_INSTALL=true \
-    ORACLE_BASE=/opt/oracle \
-    ORACLE_HOME=/opt/oracle/product/18c/dbhomeXE \
-    PATH=/home/oracle/bin:/opt/oracle/product/18c/dbhomeXE/bin:$PATH \
-    NLS_DATE_FORMAT="dd/mm/yyyy:hh24:mi:ss" \
-    ORACLE_SID=XE
+# ##
+# #  We now switch to the “oracle” user as up to this point all operations were performed as 
+# #  the root user.  We also specify the work directory - which in this case is the default
+# #  oracle user home folder location
+# #
+# USER oracle
+# WORKDIR /home/oracle
 
-## 
-#  We clear bash history to keep things clean - this is optional
-#
-RUN history -c
+# ## 
+# #  Something really useful is to set current environment for the oracle user.
+# #  This is done using the ENV command. With this we specify the core parameters that will 
+# #  make things simpler for the “oracle” unix account, example setting the PATH, ORACLE_HOME
+# #  ORACLE_SID etc.
+# #
+# ENV ORACLE_DOCKER_INSTALL=true \
+#     ORACLE_BASE=/opt/oracle \
+#     ORACLE_HOME=/opt/oracle/product/18c/dbhomeXE \
+#     PATH=/home/oracle/bin:/opt/oracle/product/18c/dbhomeXE/bin:$PATH \
+#     NLS_DATE_FORMAT="dd/mm/yyyy:hh24:mi:ss" \
+#     ORACLE_SID=XE
 
-## 
-#  The last instruction is to specify what will be executed when the container is created 
-#  from the image.  There are a few options, you could just start a bash shell and then 
-#  manually start the Oracle 18c XE database, or, you could call the custom manage-xe.sh
-#  script with the “start” parameter to start the listener and XE database on container 
-#  creation (run time)
-#
-# CMD ["/bin/bash”]
-#
-CMD ["/home/oracle/bin/manage-xe.sh", "-o", "start"]
+# ## 
+# #  We clear bash history to keep things clean - this is optional
+# #
+# RUN history -c
+
+# ## 
+# #  The last instruction is to specify what will be executed when the container is created 
+# #  from the image.  There are a few options, you could just start a bash shell and then 
+# #  manually start the Oracle 18c XE database, or, you could call the custom manage-xe.sh
+# #  script with the “start” parameter to start the listener and XE database on container 
+# #  creation (run time)
+# #
+# # CMD ["/bin/bash”]
+# #
+# CMD ["/home/oracle/bin/manage-xe.sh", "-o", "start"]
