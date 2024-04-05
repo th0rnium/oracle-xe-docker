@@ -67,11 +67,16 @@ RUN echo "oracle ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
 COPY software/oracle-database-preinstall-18c-1.0-1.el7.x86_64.rpm /install
 COPY software/oracle-database-xe-18c-1.0-1.x86_64.rpm /install/
 ENV ORACLE_DOCKER_INSTALL=true
-RUN cd /install \
- && yum -y localinstall oracle-database-*18c*  \
- && yum clean all \
- && rm -rf /var/cache/yum/* \
-&& rm -rf /install/oracle*.rpm
+# RUN cd /install \
+#  && yum -y localinstall oracle-database-*18c*  \
+#  && yum clean all \
+#  && rm -rf /var/cache/yum/* \
+# && rm -rf /install/oracle*.rpm
+RUN cd /install
+RUN yum -y localinstall oracle-database-*18c*
+RUN yum clean all 
+RUN rm -rf /var/cache/yum/* 
+RUN rm -rf /install/oracle*.rpm
 
 ## 
 #  Next we specify which ports we want to expose for Oracle when a container 
