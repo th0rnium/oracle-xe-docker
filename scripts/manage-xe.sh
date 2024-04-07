@@ -8,7 +8,7 @@
 usage ()
 {
 
-  program=`basename $0`
+  program='basename $0'
 cat <<EOF
 Usage:
    ${program} [-o start|stop] [-h]
@@ -24,13 +24,15 @@ exit 1
 ###########################################
 set_env ()
 {
-
-   REC=`grep "^${1}" /etc/oratab | grep -v "^#"`
+  echo "set_env"
+  #A='grep "^${1}" /etc/oratab'
+  echo "${1}"
+   REC='grep "^${1}" /etc/oratab | grep -v "^#"'
+   echo "bar"
    if test -z $REC
    then
      echo "Database NOT in ${v_oratab}"
      exit 1
-
    else
      echo "Database in ${v_oratab} - setting environment"
      export ORAENV_ASK=NO

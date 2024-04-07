@@ -11,5 +11,5 @@ expect "Confirm the password:\r"
 send "oracle\r"
 
 #expect -re {Specify a password to be used}
-
+echo "End setup_oracle.sh"
 expect eof
