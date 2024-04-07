@@ -1,4 +1,6 @@
-#!/usr/bin/expect -df
+#!/usr/bin/expect -d
+
+#f
 
 # 1) timing - A surprising number of programs (rn, ksh, zsh, telnet,
 # etc.) and devices discard or ignore keystrokes that arrive "too
@@ -39,16 +41,11 @@ if {$force_conservative} {
 set timeout -1
 spawn /etc/init.d/oracle-xe-18c configure
 match_max 100000
-expect_before
 expect -exact "Specify a password to be used for database accounts. Oracle recommends that the password entered should be at least 8 characters in length, contain at least 1 uppercase character, 1 lower case character and 1 digit \[0-9\]. Note that the same password will be used for SYS, SYSTEM and PDBADMIN accounts:"
-expect_after
 sleep 2.5
 send -- "oracle\r"
-expect_before
 expect -exact "\r
-expect_after
 Confirm the password:"
 sleep 2.5
 send -- "oracle\r"
-expect eof
-catch wait result
+#expect eof
