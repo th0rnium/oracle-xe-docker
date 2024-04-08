@@ -35,11 +35,19 @@ EXPOSE 1521 5500
 
 RUN yum -y install vim
 RUN yum -y install expect
-COPY script.exp /script.exp
-RUN chmod +x /script.exp 
-ARG CACHEBUST=1 
-RUN hostname
-ARG CACHEBUST=2
+
+#RUN rm -rf /etc/hosts
+#RUN echo "172.17.0.2      devXE" >> /etc/hosts
+ARG CACHEBUST=3
+CMD cat "172.17.0.2      devXE" >> /etc/hosts
+#COPY hosts /etc/hosts
+#COPY hosts /
+
+#COPY script.exp /script.exp
+#RUN chmod +x /script.exp 
+# ARG CACHEBUST=1 
+# RUN hostname
+# ARG CACHEBUST=2
 RUN cat /etc/hosts
 #RUN sed -i -e "s/^.*memlock.*//g" /etc/security/limits.d/oracle-database-preinstall-18c.conf \
 #  &&  /script.exp 
@@ -47,21 +55,21 @@ RUN cat /etc/hosts
 #ARG CACHEBUST=1 
 #RUN /script.exp 
 
-# COPY scripts/manage-xe.sh /home/oracle/bin
-# RUN chown oracle:oinstall /home/oracle/bin/manage-xe.sh \
-#    && chmod 775 /home/oracle/bin/manage-xe.sh
+COPY scripts/manage-xe.sh /home/oracle/bin
+RUN chown oracle:oinstall /home/oracle/bin/manage-xe.sh \
+  && chmod 775 /home/oracle/bin/manage-xe.sh
 
-# USER oracle
-# WORKDIR /home/oracle
+USER oracle
+WORKDIR /home/oracle
 
-# ENV ORACLE_DOCKER_INSTALL=true \
-#   ORACLE_BASE=/opt/oracle \
-#   ORACLE_HOME=/opt/oracle/product/18c/dbhomeXE \
-#   PATH=/home/oracle/bin:/opt/oracle/product/18c/dbhomeXE/bin:$PATH \
-#   NLS_DATE_FORMAT="dd/mm/yyyy:hh24:mi:ss" \
-#   ORACLE_SID=XE
+ENV ORACLE_DOCKER_INSTALL=true \
+  ORACLE_BASE=/opt/oracle \
+  ORACLE_HOME=/opt/oracle/product/18c/dbhomeXE \
+  PATH=/home/oracle/bin:/opt/oracle/product/18c/dbhomeXE/bin:$PATH \
+  NLS_DATE_FORMAT="dd/mm/yyyy:hh24:mi:ss" \
+  ORACLE_SID=XE
 
 
-# RUN history -c
+RUN history -c
 
 # CMD ["/home/oracle/bin/manage-xe.sh", "-o", "start"]
