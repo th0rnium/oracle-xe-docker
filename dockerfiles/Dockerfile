@@ -63,9 +63,6 @@ ENV ORACLE_DOCKER_INSTALL=true \
 
 RUN history -c
 
-
-# Einschub
-
 USER oracle
 cmd ["/bin/bash"]
 #CMD ["/etc/init.d/oracle-xe-18c", "configure"]
