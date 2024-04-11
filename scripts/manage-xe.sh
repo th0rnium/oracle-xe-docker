@@ -138,3 +138,5 @@ case ${v_option} in
           tail -50 /opt/oracle/diag/rdbms/xe/XE/trace/alert_XE.log
           ;;
 esac 
+
+echo "FIN!!!!!"

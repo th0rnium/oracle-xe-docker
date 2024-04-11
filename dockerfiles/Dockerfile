@@ -36,30 +36,21 @@ EXPOSE 1521 5500
 RUN yum -y install vim
 RUN yum -y install expect
 
-#RUN rm -rf /etc/hosts
-#RUN echo "172.17.0.2      devXE" >> /etc/hosts
-ARG CACHEBUST=3
-CMD cat "172.17.0.2      devXE" >> /etc/hosts
-#COPY hosts /etc/hosts
-#COPY hosts /
-
-#COPY script.exp /script.exp
-#RUN chmod +x /script.exp 
-# ARG CACHEBUST=1 
-# RUN hostname
-# ARG CACHEBUST=2
-RUN cat /etc/hosts
-#RUN sed -i -e "s/^.*memlock.*//g" /etc/security/limits.d/oracle-database-preinstall-18c.conf \
-#  &&  /script.exp 
-#RUN sed -i -e "s/^.*memlock.*//g" /etc/security/limits.d/oracle-database-preinstall-18c.conf
-#ARG CACHEBUST=1 
-#RUN /script.exp 
+COPY foo.sh /foo.sh
+RUN chmod +x /foo.sh 
+COPY script.exp /script.exp
+RUN chmod +x /script.exp 
+COPY rlwrap.exp /rlwrap.exp
+RUN chmod +x /rlwrap.exp
+RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
+  && yum install -y rlwrap
 
 COPY scripts/manage-xe.sh /home/oracle/bin
 RUN chown oracle:oinstall /home/oracle/bin/manage-xe.sh \
   && chmod 775 /home/oracle/bin/manage-xe.sh
-
 USER oracle
+RUN mkdir /home/oracle/sql
+COPY sql/* /home/oracle/sql
 WORKDIR /home/oracle
 
 ENV ORACLE_DOCKER_INSTALL=true \
@@ -72,4 +63,12 @@ ENV ORACLE_DOCKER_INSTALL=true \
 
 RUN history -c
 
-# CMD ["/home/oracle/bin/manage-xe.sh", "-o", "start"]
+
+# Einschub
+
+USER oracle
+cmd ["/bin/bash"]
+#CMD ["/etc/init.d/oracle-xe-18c", "configure"]
+#/home/oracle/bin/manage-xe.sh -o start
+#RUN chmod +x /foo.sh
+#RUN /foo.sh
